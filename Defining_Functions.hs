@@ -23,3 +23,5 @@ absDif a b = abs(a - b)
 -- halve list
 halve :: [a] -> ([a], [a])
 halve a = (reverse (drop (length a `div` 2) (reverse a)), drop (length a `div` 2) a)
+
+-- function that solves the quadratic equation ax2+bx+c=0
