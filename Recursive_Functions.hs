@@ -1,8 +1,8 @@
 -- and
 and' :: [Bool] -> Bool
 and' [] = True
-and' (x:xs) | x == True = and' xs
-            | x == False = False
+and' (x:xs) | x = and' xs
+            | not x = False
 
 -- concat
 concat' :: [[a]] -> [a]
@@ -26,4 +26,10 @@ elementN (x:xs) y = elementN xs (y-1)
 
 
 -- merge sort
--- merge :: Ord a => [a] -> [a] -> [a]
+merge :: Ord a => [a] -> [a] -> [a]
+merge x [] = x
+merge [] y = y
+merge (x:xs) (y:ys) | x > y = y : merge (x:xs) ys
+                    | otherwise = x : merge xs (y:ys)
+
+-- msort 
