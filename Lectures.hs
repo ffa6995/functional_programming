@@ -23,3 +23,10 @@ f . g = \x -> f (g x)
 -- curry
 -- curry f = \x y -> f (x, y)
 
+
+-- sieve of Eratostehnes
+primes :: [Int]
+primes = sieve [2..]
+
+sieve :: [Int] -> [Int]
+sieve (p:xs) = p : sieve (filter (\x -> x `mod` p /= 0) xs)

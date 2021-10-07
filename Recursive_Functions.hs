@@ -33,3 +33,16 @@ merge (x:xs) (y:ys) | x > y = y : merge (x:xs) ys
                     | otherwise = x : merge xs (y:ys)
 
 -- msort 
+msort :: Ord a => [a] -> [a]
+msort [] = []
+msort x | length x <= 1 = x
+        | otherwise = merge (msort (firsthalf x)) (msort (secondhalf x))
+
+
+firsthalf :: [a] -> [a]
+firsthalf [] = []
+firsthalf x = take (length x `div` 2) x
+
+secondhalf :: [a] -> [a]
+secondhalf [] = []
+secondhalf x = drop (length x `div` 2) x
