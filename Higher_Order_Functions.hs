@@ -1,3 +1,5 @@
+import Data.Char (toLower)
+
 -- 6.7 Higher Order Functions
 
 -- 6.7.2 Pipelining
@@ -22,7 +24,14 @@ pipeline' f g h x = h (g (f x))
 pipeline'' :: (a -> b) -> (b -> c) -> (c -> d) -> a -> d
 pipeline'' f g h x = h (g (f x))
 
--- 6.7.6 Decimals to Integer
-
+-- 6.7.5 Decimals to Integer
 dec2int :: [Int] -> Int
 dec2int x  = foldl (\x y -> 10*x+y) 0 x
+
+-- 6.7.6 Palindrome Checker
+palindrome :: String -> Bool
+palindrome [] = True 
+palindrome x = str == reverse(str)
+    where str = filter (\x -> x /= ' ') (map toLower x)
+    
+
