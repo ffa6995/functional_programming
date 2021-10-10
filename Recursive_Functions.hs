@@ -22,8 +22,10 @@ elementN x 0 = head x
 elementN (x:xs) y = elementN xs (y-1)
 
 -- elem
--- elem' :: Eq a => a -> [a] -> Bool
-
+elem' :: Eq a => a -> [a] -> Bool
+elem' a [] = False
+elem' a (x:xs) | a == x = True
+               | otherwise = elem' a xs
 
 -- merge sort
 merge :: Ord a => [a] -> [a] -> [a]
@@ -46,3 +48,4 @@ firsthalf x = take (length x `div` 2) x
 secondhalf :: [a] -> [a]
 secondhalf [] = []
 secondhalf x = drop (length x `div` 2) x
+
