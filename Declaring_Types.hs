@@ -25,13 +25,12 @@ int2nat :: Int -> Nat
 int2nat 0 = Zero
 int2nat n = Succ (int2nat (n-1))
 
-add :: Nat -> Nat -> Nat
-add m n = int2nat (nat2int m + nat2int n)
+add Zero n = n
+add (Succ m) n = Succ (add m n)
 
 natMult :: Nat -> Nat -> Nat
-natMult Zero a = a
-natMult m n = natMult s (int2nat (nat2int n-1))
-    where s = add m m
+natMult m Zero = m 
+natMult m n = add natMult m (int2nat (nat2int n-1)
 
 
 -- 7.8.3 Implementing folde
