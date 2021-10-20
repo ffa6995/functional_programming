@@ -28,10 +28,6 @@ int2nat n = Succ (int2nat (n-1))
 add Zero n = n
 add (Succ m) n = Succ (add m n)
 
-natMult :: Nat -> Nat -> Nat
+-- natMult :: Nat -> Nat -> Nat
 natMult m Zero = m 
-natMult m n = add natMult m (int2nat (nat2int n-1)
-
-
--- 7.8.3 Implementing folde
--- newtype Folde = 
+natMult (Succ m) n = Succ (add n (int2nat (nat2int m-1)))
