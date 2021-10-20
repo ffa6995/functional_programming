@@ -28,6 +28,6 @@ int2nat n = Succ (int2nat (n-1))
 add Zero n = n
 add (Succ m) n = Succ (add m n)
 
--- natMult :: Nat -> Nat -> Nat
-natMult m Zero = m 
-natMult (Succ m) n = Succ (add n (int2nat (nat2int m-1)))
+natMult :: Nat -> Nat -> Nat
+natMult m Zero = Zero
+natMult m (Succ n) = add (natMult m n) m
