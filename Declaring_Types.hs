@@ -61,3 +61,25 @@ isCompleteTree :: Tree a -> Bool
 isCompleteTree (Node (Leaf l) x (Node k y m)) = False
 isCompleteTree (Node (Leaf l) x (Leaf r)) = True
 isCompleteTree (Node l x r) = (&&) (isCompleteTree l) (isCompleteTree r)
+
+
+-- 7.8.5 Natural Number
+-- sub -> test: nat2int (sub (int2nat 8) (int2nat 1))
+sub :: Nat -> Nat -> Nat
+sub Zero a = Zero
+sub a Zero = a
+sub (Succ a) (Succ b) = sub a b
+
+-- division
+-- division :: Nat -> Nat -> Nat
+-- division = 
+
+-- 7.8.6 Binary Tree
+-- countLeaves
+
+
+-- countNodes
+
+-- treeDepth
+
+--isSorted
