@@ -85,10 +85,15 @@ sub (Succ a) (Succ b) = sub a b
 -- division = 
 
 -- 7.8.6 Binary Tree
--- countLeaves
-
+-- countLeaves 
+countLeaves :: Tree a -> Int
+countLeaves (Leaf _) = 1
+countLeaves (Node l _ r) = countLeaves l + countLeaves r
 
 -- countNodes
+countNodes :: Tree a -> Int
+countNodes (Leaf _) = 0
+countNodes (Node l _ r) = 1 + countNodes l + countNodes r
 
 -- treeDepth
 treeDepth :: Tree a -> Int
@@ -96,3 +101,6 @@ treeDepth (Leaf _) = 0
 treeDepth (Node l _ r) = max (treeDepth l) (treeDepth r) + 1
 
 --isSorted
+-- isSorted :: Ord a => Tree a -> Bool
+-- isSorted (Node l _ r) = l > r
+
