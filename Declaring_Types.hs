@@ -52,16 +52,26 @@ t = Node (Node (Leaf 1) 3 (Leaf 4))
           5
           (Node (Leaf 6) 7 (Leaf 9))
 
+t' :: Tree Int
+t' = Node (Node (Leaf 1) 3 (Leaf 4))
+          5
+          (Node (Leaf 6) 7 (Node (Leaf 6) 7 (Leaf 9)))
+
+
 treeUncomplete :: Tree Int
 treeUncomplete = Node (Node (Leaf 1) 3 (Leaf 4))
                5
                (Leaf 6)
 
+
 isCompleteTree :: Tree a -> Bool
 isCompleteTree (Node (Leaf l) x (Node k y m)) = False
+isCompleteTree (Node ((Node k y m)) x (Leaf r)) = False
 isCompleteTree (Node (Leaf l) x (Leaf r)) = True
 isCompleteTree (Node l x r) = (&&) (isCompleteTree l) (isCompleteTree r)
 
+isCompleteTree' :: Tree a -> Bool
+isCompleteTree' (Node l x r) = treeDepth l == treeDepth r
 
 -- 7.8.5 Natural Number
 -- sub -> test: nat2int (sub (int2nat 8) (int2nat 1))
@@ -81,5 +91,8 @@ sub (Succ a) (Succ b) = sub a b
 -- countNodes
 
 -- treeDepth
+treeDepth :: Tree a -> Int
+treeDepth (Leaf _) = 0
+treeDepth (Node l _ r) = max (treeDepth l) (treeDepth r) + 1
 
 --isSorted
