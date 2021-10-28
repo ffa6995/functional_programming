@@ -80,9 +80,10 @@ sub Zero a = Zero
 sub a Zero = a
 sub (Succ a) (Succ b) = sub a b
 
--- division
--- division :: Nat -> Nat -> Nat
--- division = 
+-- division -> test: nat2int (division (int2nat 8) (int2nat 4))
+division :: Nat -> Nat -> Nat
+division Zero a = Zero
+division a b = Succ(division (sub a b) b)
 
 -- 7.8.6 Binary Tree
 -- countLeaves 
@@ -101,6 +102,6 @@ treeDepth (Leaf _) = 0
 treeDepth (Node l _ r) = max (treeDepth l) (treeDepth r) + 1
 
 --isSorted
--- isSorted :: Ord a => Tree a -> Bool
--- isSorted (Node l _ r) = l > r
+-- isSorted :: Tree a -> Bool
+-- isSorted (Node l x r) = l < x
 
