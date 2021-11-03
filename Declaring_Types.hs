@@ -101,7 +101,6 @@ treeDepth :: Tree a -> Int
 treeDepth (Leaf _) = 0
 treeDepth (Node l _ r) = max (treeDepth l) (treeDepth r) + 1
 
---isSorted
--- isSorted :: Tree a -> Bool
--- isSorted (Node l x r) = l < x
-
+-- isSorted
+isSorted :: Ord a => Tree a -> Bool
+isSorted (Node (Leaf l) x (Leaf r)) | l < r = False
