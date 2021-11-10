@@ -64,6 +64,8 @@ treeUncomplete = Node (Node (Leaf 1) 3 (Leaf 4))
                (Leaf 6)
 
 
+
+
 isCompleteTree :: Tree a -> Bool
 isCompleteTree (Node (Leaf l) x (Node k y m)) = False
 isCompleteTree (Node ((Node k y m)) x (Leaf r)) = False
@@ -101,6 +103,19 @@ treeDepth :: Tree a -> Int
 treeDepth (Leaf _) = 0
 treeDepth (Node l _ r) = max (treeDepth l) (treeDepth r) + 1
 
+getValue :: Ord a => Tree a -> a
+getValue (Leaf v) = v
+getValue (Node l v r) = v
+
 -- isSorted
 isSorted :: Ord a => Tree a -> Bool
-isSorted (Node (Leaf l) x (Leaf r)) | l < r = False
+isSorted (Leaf _) = True
+isSorted (Node l x r) = (getValue l < x && getValue r > x) && isSorted l && isSorted r
+
+-- 7.8.7 Key-Value Store
+type Key = Int
+type Value = String 
+
+data KeyValueStore = Empty
+                   | Store Key Value KeyValueStore
+                   deriving Show
