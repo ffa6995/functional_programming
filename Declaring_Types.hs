@@ -63,9 +63,6 @@ treeUncomplete = Node (Node (Leaf 1) 3 (Leaf 4))
                5
                (Leaf 6)
 
-
-
-
 isCompleteTree :: Tree a -> Bool
 isCompleteTree (Node (Leaf l) x (Node k y m)) = False
 isCompleteTree (Node ((Node k y m)) x (Leaf r)) = False
