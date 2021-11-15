@@ -110,6 +110,7 @@ isSorted (Leaf _) = True
 isSorted (Node l x r) = (getValue l < x && getValue r > x) && isSorted l && isSorted r
 
 -- 7.8.7 Key-Value Store
+-- TODO: NOT FINISHED
 type Key = Int
 type Value = String 
 

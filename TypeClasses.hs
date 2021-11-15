@@ -36,7 +36,8 @@ newtype ZipList a = Z [a] deriving Show
 
 instance Functor ZipList where
   -- fmap :: (a -> b) -> ZipList a -> ZipList b
-  fmap g (Z xs) = fmap g (Z xs)
+ -- fmap g xs = g xs 
+  --fmap g (Z xs) = fmap g (Z xs)
   
 instance Applicative ZipList where
   -- pure :: a -> ZipList a
