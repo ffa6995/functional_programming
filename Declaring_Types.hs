@@ -127,3 +127,13 @@ insertToStore k v (Store ka va kvs) | k == ka = Store ka v kvs
                                     | k /= ka = Store k v (Store ka va kvs)
                                     | otherwise = insertToStore k v kvs
 
+
+removeFromStore :: Eq k => k -> KeyValueStore k v -> KeyValueStore k v
+removeFromStore k Empty = Empty
+removeFromStore k (Store ka va kvs) | ka == k = kvs 
+                                    | otherwise = Store ka va (removeFromStore k kvs)
+
+getFromStore :: Eq k => k -> KeyValueStore k v -> Maybe v
+getFromStore k Empty = Nothing
+getFromStore k (Store ka kv kvs) | k == ka = Just kv
+                                 | otherwise = getFromStore k kvs
