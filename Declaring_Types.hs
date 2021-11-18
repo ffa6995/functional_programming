@@ -114,6 +114,15 @@ isSorted (Node l x r) = (getValue l < x && getValue r > x) && isSorted l && isSo
 type Key = Int
 type Value = String 
 
-data KeyValueStore = Empty
-                   | Store Key Value KeyValueStore
+data KeyValueStore k v = Empty
+                   | Store k v (KeyValueStore k v)
                    deriving Show
+
+keyValueStore :: KeyValueStore Int String
+keyValueStore = Store 1 "ABC" (Store 2 "DEF" Empty)
+
+insertToStore :: Eq k => k -> v -> KeyValueStore k v -> KeyValueStore k v
+insertToStore k v Empty = Store k v Empty
+insertToStore k v (Store ka va kvs) | k == ka = Store ka v kvs
+                                  | otherwise = insertToStore k v kvs
+
