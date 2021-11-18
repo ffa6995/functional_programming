@@ -124,5 +124,6 @@ keyValueStore = Store 1 "ABC" (Store 2 "DEF" Empty)
 insertToStore :: Eq k => k -> v -> KeyValueStore k v -> KeyValueStore k v
 insertToStore k v Empty = Store k v Empty
 insertToStore k v (Store ka va kvs) | k == ka = Store ka v kvs
-                                  | otherwise = insertToStore k v kvs
+                                    | k /= ka = Store k v (Store ka va kvs)
+                                    | otherwise = insertToStore k v kvs
 
