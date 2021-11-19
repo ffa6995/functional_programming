@@ -110,7 +110,6 @@ isSorted (Leaf _) = True
 isSorted (Node l x r) = (getValue l < x && getValue r > x) && isSorted l && isSorted r
 
 -- 7.8.7 Key-Value Store
--- TODO: NOT FINISHED
 type Key = Int
 type Value = String 
 
@@ -137,3 +136,9 @@ getFromStore :: Eq k => k -> KeyValueStore k v -> Maybe v
 getFromStore k Empty = Nothing
 getFromStore k (Store ka kv kvs) | k == ka = Just kv
                                  | otherwise = getFromStore k kvs
+
+
+isKeyInStore :: Eq k => k -> KeyValueStore k v -> Bool
+isKeyInStore k Empty = False
+isKeyInStore k (Store ka va kvs) | ka == k = True
+                                 | otherwise = isKeyInStore k kvs
