@@ -4,17 +4,22 @@ data Nat = Zero | Succ Nat
 -- Enum Instance
 instance Enum Nat where
     toEnum 0 = Zero
-    toEnum 1 = Succ Zero
+    toEnum x = Succ (toEnum (x-1))
     fromEnum Zero = 0
-    fromEnum (Succ Zero) = 1
+    fromEnum (Succ x) = fromEnum x+1
 
 instance Eq Nat where
-    Zero == Zero = True 
+    Zero == Zero = True
+    Succ a == Succ b = a == b
     _    == _    = False
 
 -- Ord Instance
 instance Ord Nat where
-    (<=) d1 d2 = fromEnum d1 == fromEnum d2
+    Zero <= Zero = True
+    Zero <= Succ x = True
+    Succ x <= Zero = False
+    Succ x <= Succ y = x <= y
+
 
 -- 9.14.2 Functorial Tree
 data Tree a = Leaf a 
@@ -35,15 +40,15 @@ instance Functor Tree where
 newtype ZipList a = Z [a] deriving Show
 
 instance Functor ZipList where
-  -- fmap :: (a -> b) -> ZipList a -> ZipList b
+ -- fmap :: (a -> b) -> ZipList a -> ZipList b
  -- fmap g xs = g xs 
   --fmap g (Z xs) = fmap g (Z xs)
   
 instance Applicative ZipList where
-  -- pure :: a -> ZipList a
- -- pure x = ...
+  --pure :: a -> ZipList a
+  --pure x = a -> ...
   
-  -- <*> :: ZipList (a -> b) -> ZipList a -> ZipList b
+ -- <*> :: ZipList (a -> b) -> ZipList a -> ZipList b
   --(Z gs) <$> (Z xs) = ...
 
 -- Monoids
