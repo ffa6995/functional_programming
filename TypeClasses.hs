@@ -54,7 +54,6 @@ instance Applicative ZipList where
 
 -- Monoids
 -- 9.14.4.1 Boolean Monids
-
 newtype BooleanAnd = BA Bool deriving Show
 newtype BooleanOr =  BO Bool deriving Show
 
@@ -74,8 +73,16 @@ instance Monoid BooleanOr where
 
 
 -- 9.14.4.2 Maybe Monoid
--- newtype MaybeMonoid a = Maybe a
+newtype AddMaybe a = AddMaybe (Maybe a) deriving Show
 
+instance Num a => Semigroup (AddMaybe a) where
+    (<>) (AddMaybe (Just a)) (AddMaybe (Just b)) = AddMaybe (Just (a + b))
+    (<>) (AddMaybe (Just a)) (AddMaybe Nothing) = AddMaybe (Just a)
+    (<>) (AddMaybe Nothing) (AddMaybe (Just a)) = AddMaybe (Just a)
+    (<>) (AddMaybe Nothing) (AddMaybe Nothing) = AddMaybe Nothing
 
+instance Num a => Monoid (AddMaybe a) where
+    mempty = AddMaybe Nothing 
+    mappend = (<>)
 
 -- 9.14.5 Foldable Tree
