@@ -88,6 +88,7 @@ instance Num a => Monoid (AddMaybe a) where
 -- 9.14.5 Foldable Tree
 
 -- treeDepth
+
 instance Foldable Tree where
   foldr f g (Leaf _) = g
   foldr f g (Branch l x r) = foldr f (f x (foldr f g r)) l
@@ -95,6 +96,8 @@ instance Foldable Tree where
   foldMap f (Leaf _) = mempty
   foldMap f (Branch l x r) = foldMap f l `mappend` f x `mappend` foldMap f r
 
+-- functions which need to distinguish between elements of the
+-- structure (e.g. in a Tree) are impossible to implement using only Foldable.
 treeDepth :: Tree a -> Int
 treeDepth (Leaf _) = 0
 treeDepth (Branch l _ r) = max (treeDepth l) (treeDepth r) + 1
