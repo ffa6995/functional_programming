@@ -15,7 +15,15 @@ sumOfThreeRolls r g = (r1+r2+r3, g2)
 sumRand :: RandomGen g => (Int, Int) -> Int -> g -> ((Int, Int) -> g -> (Int, g)) -> (Int, g)
 sumRand r i g f = ((foldr (+) 0 (replicate i (fst (f r g)))), g)
 
--- 10.5.2 Rolling Dices
+-- 10.5.2.1 Rolling Dices
+-- test: rollNMDices (1,6) (mkStdGen 33) 5 5
+-- rollNMDices (1,6) (mkStdGen 42) 5 5
 rollNMDices :: RandomGen g => (Int, Int) -> g -> Int -> Int -> [Int]
 rollNMDices r g n m | m == 0 = []
                     | otherwise = sum (take n (randomRs r g)) : rollNMDices r (snd (split g)) n (m-1)
+
+-- 10.5.2.2 avg2Dices
+-- test: 
+avg2Dices :: Int -> Int -> Double
+avg2Dices s m =  fromIntegral (sum (rollNMDices (1,6) (mkStdGen s) 2 m) `div` m)
+
