@@ -16,5 +16,6 @@ sumRand :: RandomGen g => (Int, Int) -> Int -> g -> ((Int, Int) -> g -> (Int, g)
 sumRand r i g f = ((foldr (+) 0 (replicate i (fst (f r g)))), g)
 
 -- 10.5.2 Rolling Dices
-rollNMDices :: RandomGen g => (Int, Int) -> g -> Int -> Int -> Int
-rollNMDices r g n m = foldr (+) 0 (replicate m (take n (randomRs r g)))
+rollNMDices :: RandomGen g => (Int, Int) -> g -> Int -> Int -> [Int]
+rollNMDices r g n m | m == 0 = []
+                    | otherwise = sum (take n (randomRs r g)) : rollNMDices r (snd (split g)) n (m-1)
