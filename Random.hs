@@ -23,7 +23,18 @@ rollNMDices r g n m | m == 0 = []
                     | otherwise = sum (take n (randomRs r g)) : rollNMDices r (snd (split g)) n (m-1)
 
 -- 10.5.2.2 avg2Dices
--- test: 
+-- test: avg2Dices 33 5
 avg2Dices :: Int -> Int -> Double
 avg2Dices s m =  fromIntegral (sum (rollNMDices (1,6) (mkStdGen s) 2 m) `div` m)
 
+-- 10.5.2.3 replicate2Dices
+replicate2Dices :: Int -> Int -> Double
+replicate2Dices s n = replicate2DicesAvgs s n / fromIntegral n
+
+replicate2DicesAvgs :: Int -> Int -> Double
+replicate2DicesAvgs s n | n == 0 = 0
+                    | otherwise = avg2Dices s 1000 + replicate2DicesAvgs (s`div`n*15) (n-1)
+
+-- What is the result and why? replicate2Dices 42 10000
+-- Ein Würfel ist gleichverteilt und deshalb kommt bei einer Großen Anzahl an Würfen
+-- von jeder Zahl etwa gleich viel, deshalb ist das Ergebnis mit zwei Würfeln 6 
