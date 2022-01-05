@@ -9,20 +9,22 @@ quadEq (a, b, c) = (x1, x2)
         d = b * b - 4 * a * c
         e = - b / (2 * a)
 
-calcD :: (Float, Float, Float) -> Float
-calcD (a, b, c) = b * b - 4 * a * c
+calcD :: (Float, Float, Float) -> (Float -> r) -> r
+calcD (a, b, c) k = k (b * b - 4 * a * c)
 
-calcE :: (Float, Float) -> Float
-calcE (a, b) = - b / (2 * a)
+calcE :: (Float, Float) -> (Float -> r) -> r
+calcE (a, b) k = k (- b / (2 * a))
 
-quadtraticEq :: (Float, Float, Float) -> Float -> Float -> (Float, Float)
-quadtraticEq (x, y, z) d e = (e + sqrt d / (2 * x), e - sqrt d / (2 * x))
+quadtraticEq :: (Float, Float, Float) -> Float -> Float -> ((Float, Float) -> r) -> r
+quadtraticEq (x, y, z) d e k = k (e + sqrt d / (2 * x), e - sqrt d / (2 * x))
 
-quadratic_cps :: (Float, Float, Float) -> (Float, Float)
-quadratic_cps (x, y, z) =
+-- Beispiel quadraticCps (1,5,6) print
+-- Ergebnis = (-2.0,-3.0)
+quadraticCps :: (Float, Float, Float) -> ((Float, Float) -> r) -> r
+quadraticCps (x, y, z) k =
   calcD (x, y, z) $ \d ->
   calcE (x, y) $ \e ->
-  quadtraticEq (x, y, z) d e
+  quadtraticEq (x, y, z) d e k
   
 
 
