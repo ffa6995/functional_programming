@@ -18,7 +18,7 @@ calcE (a, b) = - b / (2 * a)
 quadtraticEq :: (Float, Float, Float) -> Float -> Float -> (Float, Float)
 quadtraticEq (x, y, z) d e = (e + sqrt d / (2 * x), e - sqrt d / (2 * x))
 
-quadratic_cps :: (Float, Float, Float) -> ((Float, Float, Float) -> Float) -> ((Float, Float) -> Float) -> (Float, Float)
+quadratic_cps :: (Float, Float, Float) -> (Float, Float)
 quadratic_cps (x, y, z) =
   calcD (x, y, z) $ \d ->
   calcE (x, y) $ \e ->
