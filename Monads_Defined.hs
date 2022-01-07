@@ -52,4 +52,9 @@ liftM2 f m m2 = do {x <- m; y <- m2; return (f x y)}
 -- mapM_ with original type
 --mapM_ :: (Foldable t, Monad m) => (a -> m b) -> t a -> m ()
 
---12.12.3
+--12.12.3 Tree Labeling
+
+
+
+data Tree a = Leaf a | Node (Tree a) a (Tree a) deriving Show
+
