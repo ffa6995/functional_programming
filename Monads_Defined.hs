@@ -1,3 +1,4 @@
+import Data.Foldable
 -- 12. Monads Defined
 
 --12.12.1 CPS quadratic equation
@@ -25,36 +26,49 @@ quadraticCps (x, y, z) k =
   calcD (x, y, z) $ \d ->
   calcE (x, y) $ \e ->
   quadtraticEq (x, y, z) d e k
-  
+
 --12.12.2 Monad Basics
 liftM :: Monad m => (a -> b) -> m a -> m b
 liftM f m = m >>= \a -> return (f a)
-
-newtype Identity a = Id { runIdentity :: a }
-
-instance Functor Identity where
-     fmap f (Id x) = Id (f x)
-
-instance Applicative Identity where
-     pure = Id
-     Id f <*> Id x = Id (f x)
 
 --test liftM2 (+) [0,1] [0,2]
 liftM2 :: Monad m => (a -> b -> c) -> m a -> m b -> m c
 liftM2 f m m2 = do {x <- m; y <- m2; return (f x y)}
 
+newtype Identity a = Id a deriving Show
+
+instance Functor Identity where
+     fmap f (Id a) = Id (f a)
+
+instance Applicative Identity where
+     pure a = Id a
+     Id f <*> Id a = Id (f a)
+
+instance Monad Identity where
+  return a = Id a
+  (Id a) >>= f = f a
+
+
 --mapM
---mapM :: Monad m => (a -> m b) -> [a] -> m [b]
+mapM' :: Monad m => (a -> m b) -> [a] -> m [b]
+mapM' _ [] = return []
+mapM' f (x:xs) = f x >>=
+    \x' -> mapM' f xs >>=
+        \xs' -> return (x' : xs')
 
 --mapM_ return nothing -> void
---mapM_ mapM_ :: Monad m => (a -> m b) -> [a] -> m ()
+mapM_' :: Monad m => (a -> m b) -> [a] -> m ()
+mapM_' _ [] = return ()
+mapM_' f (x:xs) = f x >>=
+   \x' -> mapM_' f xs >>=
+     \xs' -> return ()
 
 -- mapM_ with original type
---mapM_ :: (Foldable t, Monad m) => (a -> m b) -> t a -> m ()
+mapM_'' :: (Foldable t, Monad m) => (a -> m b) -> t a -> m ()
+mapM_'' g t = mapM_' g $ toList t
+
 
 --12.12.3 Tree Labeling
-
-
 
 data Tree a = Leaf a | Node (Tree a) a (Tree a) deriving Show
 
