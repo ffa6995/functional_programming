@@ -1,5 +1,5 @@
 import Data.Foldable
-import GHC.Base (VecElem(Int16ElemRep))
+import Control.Monad.State
 -- 12. Monads Defined
 
 --12.12.1 CPS quadratic equation
@@ -74,6 +74,7 @@ data Tree a = Leaf a | Node (Tree a) a (Tree a) deriving Show
 tree :: Tree Char
 tree = Node (Node (Leaf 'c') 'b' (Node (Leaf 'e') 'd' (Leaf 'f'))) 'a' (Leaf 'g')
 
+-- pure function
 labelTree :: Tree a -> Tree (a, Int)
 labelTree (Leaf a) = Leaf (a, 0)
 labelTree (Node l a r) = labelTree' (Node l a r) (-1)
@@ -96,14 +97,35 @@ newtype StateComp s a = S (s -> (a,s))
                              in fb s')
 
 toState :: a -> StateComp s a
-toState a = S (\s -> (a, s))
+toState a = S (\s -> (a, s))                  
 
 runStateComp :: StateComp s a -> s -> (a,s)
 runStateComp (S f) s = f s
 
-labelTree' :: Tree a -> StateComp Int (Tree (a, Int))
-labelTree' (Leaf a)     = S (\labelNo -> (Leaf (a, labelNo + 1), labelNo + 1))
-labelTree' (Node l a r) = S (\labelNo -> ((a, labelNo + 1), labelNo + 1)) -->
-                            \a' -> labelTree' l -->
-                                \l' -> labelTree' r -->
-                                    \r' -> S (\labelNo -> (Node l' a' r', labelNo))
+evalStateComp :: StateComp s a -> s -> a
+evalStateComp rng = fst . runStateComp rng
+
+execStateComp :: StateComp s a -> s -> s
+execStateComp rng = snd . runStateComp rng
+
+-- test: evalStateComp (labelTreeState tree) 0
+labelTreeState :: Tree a -> StateComp Int (Tree (a, Int))
+labelTreeState (Leaf a) = S (\s -> (Leaf (a, s), s + 1))
+labelTreeState (Node l a r) = labelTreeState (Leaf a) -->
+                               \(Leaf num) -> labelTreeState l -->
+                                 \lt -> labelTreeState r -->
+                                   \rt -> toState (Node lt num rt)
+
+-- monad
+-- test: evalState (labelTreeMonad tree) 0
+labelTreeMonad :: Tree a -> State Int (Tree (a, Int))
+labelTreeMonad (Leaf a) = do
+    i <- get
+    put (i+1)
+    return (Leaf (a,i))
+labelTreeMonad (Node l a r) = do
+    num <- labelTreeMonad (Leaf a)
+    lt <- labelTreeMonad l
+    rt <- labelTreeMonad r
+    let (Leaf a) = num
+    return (Node lt a rt)
