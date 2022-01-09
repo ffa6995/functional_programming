@@ -1,4 +1,5 @@
 import Data.Foldable
+import GHC.Base (VecElem(Int16ElemRep))
 -- 12. Monads Defined
 
 --12.12.1 CPS quadratic equation
@@ -65,10 +66,44 @@ mapM_' f (x:xs) = f x >>=
 
 -- mapM_ with original type
 mapM_'' :: (Foldable t, Monad m) => (a -> m b) -> t a -> m ()
-mapM_'' g t = mapM_' g $ toList t
-
+mapM_'' g t = mapM_ g $ toList t
 
 --12.12.3 Tree Labeling
-
 data Tree a = Leaf a | Node (Tree a) a (Tree a) deriving Show
 
+tree :: Tree Char
+tree = Node (Node (Leaf 'c') 'b' (Node (Leaf 'e') 'd' (Leaf 'f'))) 'a' (Leaf 'g')
+
+labelTree :: Tree a -> Tree (a, Int)
+labelTree (Leaf a) = Leaf (a, 0)
+labelTree (Node l a r) = labelTree' (Node l a r) (-1)
+      where
+        labelTree' :: Tree a -> Int -> Tree (a, Int)
+        labelTree' (Leaf a) i = Leaf (a, i + 1)
+        labelTree' (Node l a r) i = Node (labelTree' l (i+1))
+                                    (a, i+1)
+                                    (labelTree' r (treeDepth l + i + 1))
+        treeDepth :: Tree a -> Int 
+        treeDepth (Leaf _) = 1
+        treeDepth (Node l a r) = treeDepth l + treeDepth r + 1
+
+-- With StateComp from Monads Motivated
+newtype StateComp s a = S (s -> (a,s))
+
+(-->) :: StateComp s a -> (a -> StateComp s b) -> StateComp s b
+(-->) (S fa) cont = S (\s -> let (a,s') = fa s
+                                 (S fb) = cont a
+                             in fb s')
+
+toState :: a -> StateComp s a
+toState a = S (\s -> (a, s))
+
+runStateComp :: StateComp s a -> s -> (a,s)
+runStateComp (S f) s = f s
+
+labelTree' :: Tree a -> StateComp Int (Tree (a, Int))
+labelTree' (Leaf a)     = S (\labelNo -> (Leaf (a, labelNo + 1), labelNo + 1))
+labelTree' (Node l a r) = S (\labelNo -> ((a, labelNo + 1), labelNo + 1)) -->
+                            \a' -> labelTree' l -->
+                                \l' -> labelTree' r -->
+                                    \r' -> S (\labelNo -> (Node l' a' r', labelNo))
