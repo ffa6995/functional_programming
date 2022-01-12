@@ -17,7 +17,7 @@ logic b r s = if r > length b || r <= 0 || s <= 0 || b !! (r-1) < s then Nothing
                 else Just (removeStarsFromRow b r s 0)
                     where
                         removeStarsFromRow [] _ _ _ = []
-                        removeStarsFromRow (x:xs) r s cr = if cr == (r-1) then (x-1) : removeStarsFromRow xs r s (cr+1)
+                        removeStarsFromRow (x:xs) r s cr = if cr == (r-1) then (x-s) : removeStarsFromRow xs r s (cr+1)
                                                              else x : removeStarsFromRow xs r s (cr+1)
 
 changePlayer :: Player -> Player
@@ -26,7 +26,7 @@ changePlayer Two = One
 
 gameFinished :: [Int] -> Bool
 gameFinished [] = True
-gameFinished x = False
+gameFinished (x:xs) = if x /= 0 then False else gameFinished xs 
 
 nim :: IO ()
 nim = do
@@ -37,7 +37,7 @@ nim = do
 turn :: [Int] -> Player -> IO ()
 turn b p = do
     putStrLn ("Player " ++ show p ++ "'s turn")
-    putStrLn (boardToString board)
+    putStrLn (boardToString b)
     putStrLn "Pick one of the rows"
     row <- getLine
     putStrLn "How many stars you want to remove?"
@@ -57,6 +57,6 @@ turn b p = do
                     turn board (changePlayer p)
 
 main :: IO ()
-main = nim
+main = nim 
             
     
