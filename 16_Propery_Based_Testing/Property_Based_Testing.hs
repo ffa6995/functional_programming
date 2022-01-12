@@ -54,10 +54,10 @@ prop_commutative_add_float u v = property (u + v == v + u)
 
 -- 16.6.3 Dice
 
-newtype Dice = Roll Int deriving Show
+newtype Dice = Dice Int deriving Show
 
 genDice :: Gen Dice
-genDice = elements [Roll 1, Roll 2, Roll 3, Roll 4, Roll 5, Roll 6]
+genDice = elements [Dice 1, Dice 2, Dice 3, Dice 4, Dice 5, Dice 6]
 
 instance Arbitrary Dice where
     arbitrary = genDice
@@ -65,5 +65,5 @@ instance Arbitrary Dice where
 -- coverage
 -- test quickCheck (checkCoverage checkCoverageTwoDices)
 checkCoverageTwoDices :: Dice -> Dice -> Property
-checkCoverageTwoDices (Roll a) (Roll b) = cover 16.67 (a + b == 7) "of the sum of two Dices are 7" (a + b == a + b)
+checkCoverageTwoDices (Dice a) (Dice b) = cover 16.67 (a + b == 7) "of the sum of two Dices are 7" (a + b == a + b)
 
