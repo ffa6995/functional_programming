@@ -1,6 +1,7 @@
 {-# LANGUAGE DeriveFunctor #-}
 import System.IO
 import Control.Monad.Free
+import Control.Monad.Trans.Writer 
 
 -- 17.7 Free_Monads
 
@@ -113,8 +114,22 @@ match xs ys = map (\x -> if elem x ys then x else '-') xs
 -- interpretIO Nothing hangman
 
 -- 17.7.5 Pure Hangman Interpreter
+-- stack ghci Free_Monads.hs --resolver lts-17.13 --package free --package transformers
 pureInterpret :: String -> [String] -> HangmanProgram a -> Writer String a
 pureInterpret word _ (Pure h) = return h
-pureInterpret word guess (Free (PrintLine s a)) = tell (s ++ "\n") >> pureInterpret
+pureInterpret word guesses (Free (PrintLine s a)) = tell (s ++ "\n") >> pureInterpret word guesses a
+pureInterpret word guesses (Free (ReadSecretLine a)) = tell (map (const '-') word ++ "\n") >> pureInterpret word guesses a
+pureInterpret word (x:xs) (Free (Guess g)) = tell (x ++ "\n") >> if x == word then
+                                                        pureInterpret word [] (g Nothing)
+                                                        else pureInterpret word xs (g (Just $ match word x))
+
+runPureInterpret :: ((), String)
+runPureInterpret = runWriter $ pureInterpret "Haskell" ["H", "l", "Has", "Haskell"] hangman
+
+printPureInterpet :: IO ()
+printPureInterpet = putStr (snd runPureInterpret)
+
+testPureInterpet :: Bool
+testPureInterpet = snd runPureInterpret == "Think of a word: \n-------\nTry to guess it:\n? \nH\nH------\n? \nl\n-----ll\n? \nHas\nHas----\n? \nHaskell\nYou got it!\n"
 
 -- 17.7.6 Nim Free Monads
