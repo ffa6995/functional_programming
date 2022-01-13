@@ -2,7 +2,8 @@
 import System.IO
 import Control.Monad.Free
 import Control.Monad.Trans.Writer 
-
+import Control.Monad.Trans.Writer (Writer)
+import Data.Bool (Bool)
 -- 17.7 Free_Monads
 
 -- 17.7.1 map fixed-point recursion
@@ -133,3 +134,95 @@ testPureInterpet :: Bool
 testPureInterpet = snd runPureInterpret == "Think of a word: \n-------\nTry to guess it:\n? \nH\nH------\n? \nl\n-----ll\n? \nHas\nHas----\n? \nHaskell\nYou got it!\n"
 
 -- 17.7.6 Nim Free Monads
+-- Define the effect language
+data NimEff a
+    = NimPrintLine String a
+    | NimGetLine (String -> a)
+    deriving Functor
+  
+--Define a program type and smart constructors
+type NimProgram = Free NimEff
+nimPrintLine :: String -> NimProgram ()
+nimPrintLine str = liftF (NimPrintLine str ())
+
+nimGetLine :: NimProgram String
+nimGetLine = liftF (NimGetLine id)
+
+board :: [Int]
+board = [5,4,3,2,1]
+
+-- Player data type
+data Player = One | Two deriving (Show, Eq)
+
+changePlayer :: Player -> Player
+changePlayer One = Two
+changePlayer Two = One
+
+logic :: [Int] -> Int -> Int -> Maybe [Int]
+logic b r s = if r > length b || r <= 0 || s <= 0 || b !! (r-1) < s then Nothing
+                else Just (removeStarsFromRow b r s 0)
+                    where
+                        removeStarsFromRow [] _ _ _ = []
+                        removeStarsFromRow (x:xs) r s cr = if cr == (r-1) then (x-s) : removeStarsFromRow xs r s (cr+1)
+                                                             else x : removeStarsFromRow xs r s (cr+1)
+
+
+gameFinished :: [Int] -> Bool
+gameFinished [] = True
+gameFinished (x:xs) = if x /= 0 then False else gameFinished xs 
+
+boardToString :: [Int] -> String
+boardToString board = boardToStringRow board 1
+    where
+        boardToStringRow [] r = ""
+        boardToStringRow (x:xs) r = show r ++ ": " ++ concat (replicate x "* ") ++ if null xs then "" else "\n" ++ boardToStringRow xs (r+1)
+
+
+nim :: NimProgram ()
+nim = do 
+  nimPrintLine "Start Nim"
+  turn board One
+
+turn :: [Int] -> Player -> NimProgram ()
+turn b p = do
+    nimPrintLine ("Player " ++ show p ++ "'s turn")
+    nimPrintLine (boardToString b)
+    nimPrintLine "Pick one of the rows"
+    row <- nimGetLine
+    nimPrintLine "How many stars you want to remove?"
+    stars <- nimGetLine
+    let updatedBoard = logic b (read row) (read stars)
+    case updatedBoard of
+        Nothing -> do
+            nimPrintLine "You can't do this, try something else ;)"
+            turn b p
+        (Just board) -> do
+            if gameFinished board
+                then do
+                    nimPrintLine ("Player " ++ show p ++ " is the winner!")
+                    nimPrintLine "Next game is starting . . ."
+                    nim
+                else
+                    turn board (changePlayer p)
+
+
+nimInterpretIO :: NimProgram a -> IO a
+nimInterpretIO (Pure a) = return a
+nimInterpretIO (Free (NimPrintLine str a)) = do
+  putStrLn str
+  nimInterpretIO a
+nimInterpretIO (Free (NimGetLine fa)) = do
+  line <- getLine
+  nimInterpretIO (fa line)
+
+-- Pure Nim Interpreter
+nimInterpretPure :: [String] -> NimProgram a -> Writer String a
+nimInterpretPure _ (Pure a) = return a
+nimInterpretPure turns (Free (NimPrintLine str a)) = tell (str ++ "\n") >> nimInterpretPure turns a
+nimInterpretPure (x:xs) (Free (NimGetLine fa)) = tell (x ++ "\n") >> nimInterpretPure xs (fa x)
+
+runNimInterpretPure :: ((), String)
+runNimInterpretPure = runWriter $ nimInterpretPure ["5","1", "3","3", "4","2", "1","5", "2","4"] nim
+
+printRunNimInterpretPure :: IO ()
+printRunNimInterpretPure = putStr (snd runNimInterpretPure)
