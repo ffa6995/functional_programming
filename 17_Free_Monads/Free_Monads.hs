@@ -214,15 +214,3 @@ nimInterpretIO (Free (NimPrintLine str a)) = do
 nimInterpretIO (Free (NimGetLine fa)) = do
   line <- getLine
   nimInterpretIO (fa line)
-
--- Pure Nim Interpreter
-nimInterpretPure :: [String] -> NimProgram a -> Writer String a
-nimInterpretPure _ (Pure a) = return a
-nimInterpretPure turns (Free (NimPrintLine str a)) = tell (str ++ "\n") >> nimInterpretPure turns a
-nimInterpretPure (x:xs) (Free (NimGetLine fa)) = tell (x ++ "\n") >> nimInterpretPure xs (fa x)
-
-runNimInterpretPure :: ((), String)
-runNimInterpretPure = runWriter $ nimInterpretPure ["5","1", "3","3", "4","2", "1","5", "2","4"] nim
-
-printRunNimInterpretPure :: IO ()
-printRunNimInterpretPure = putStr (snd runNimInterpretPure)
