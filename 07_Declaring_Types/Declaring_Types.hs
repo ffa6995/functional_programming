@@ -37,7 +37,6 @@ data Expr = Val Int
           | Add Expr Expr
           | Mul Expr Expr
 
--- TODO: add String compability
 folde :: (Int -> a) -> (a -> a -> a) -> Expr -> a
 folde f g (Val n) = f n
 folde f g (Add z x) = g (folde f g z) (folde f g x)
